@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz Loại Da</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --cream: #faf7f2;
+    --sand: #e8dfd0;
+    --blush: #c9a98a;
+    --terra: #8b5e3c;
+    --dark: #2c1f14;
+    --green: #5a7a5a;
+    --soft: #f0ebe3;
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--dark);
+    min-height: 100vh;
+    padding: 20px;
+  }
+
+  .quiz-wrap {
+    max-width: 620px;
+    margin: 0 auto;
+  }
+
+  .quiz-header {
+    text-align: center;
+    padding: 36px 0 28px;
+  }
+
+  .quiz-header h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2.4rem;
+    font-weight: 600;
+    color: var(--terra);
+    line-height: 1.2;
+  }
+
+  .quiz-header p {
+    margin-top: 10px;
+    font-size: 0.9rem;
+    color: #7a6a58;
+    font-weight: 300;
+    letter-spacing: 0.03em;
+  }
+
+  /* Progress */
+  .progress-bar {
+    height: 3px;
+    background: var(--sand);
+    border-radius: 99px;
+    margin-bottom: 32px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--blush), var(--terra));
+    border-radius: 99px;
+    transition: width 0.5s ease;
+  }
+  .progress-label {
+    text-align: right;
+    font-size: 0.75rem;
+    color: #a08a76;
+    margin-bottom: 6px;
+    font-weight: 300;
+  }
+
+  /* Question card */
+  .question-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 32px;
+    box-shadow: 0 4px 24px rgba(44,31,20,0.07);
+    animation: fadeUp 0.4s ease;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .question-num {
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--blush);
+    font-weight: 500;
+    margin-bottom: 10px;
+  }
+
+  .question-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.45rem;
+    line-height: 1.4;
+    color: var(--dark);
+    margin-bottom: 24px;
+  }
+
+  /* Options */
+  .options { display: flex; flex-direction: column; gap: 10px; }
+
+  .option-btn {
+    background: var(--soft);
+    border: 1.5px solid transparent;
+    border-radius: 10px;
+    padding: 14px 18px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    color: var(--dark);
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .option-btn:hover {
+    background: #f5ede2;
+    border-color: var(--blush);
+    transform: translateX(4px);
+  }
+
+  .option-btn.selected {
+    background: linear-gradient(135deg, #f5ede2, #fdf6ee);
+    border-color: var(--terra);
+    color: var(--terra);
+    font-weight: 500;
+  }
+
+  .option-dot {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 1.5px solid #c4b09a;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+  }
+
+  .option-btn.selected .option-dot {
+    background: var(--terra);
+    border-color: var(--terra);
+  }
+  .option-btn.selected .option-dot::after {
+    content: '';
+    width: 8px; height: 8px;
+    background: #fff;
+    border-radius: 50%;
+  }
+
+  /* Nav */
+  .nav-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 28px;
+  }
+
+  .btn-back {
+    background: none;
+    border: none;
+    color: #a08a76;
+    font-size: 0.85rem;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    padding: 8px 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .btn-back:hover { color: var(--terra); }
+
+  .btn-next {
+    background: var(--terra);
+    color: #fff;
+    border: none;
+    border-radius: 50px;
+    padding: 12px 30px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.02em;
+  }
+  .btn-next:hover { background: #7a4f2e; transform: translateY(-1px); }
+  .btn-next:disabled { background: var(--sand); color: #b0a090; cursor: default; transform: none; }
+
+  /* Result */
+  .result-card {
+    background: #fff;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 24px rgba(44,31,20,0.09);
+    animation: fadeUp 0.5s ease;
+  }
+
+  .result-banner {
+    background: linear-gradient(135deg, var(--terra), #b07845);
+    padding: 36px 32px 28px;
+    color: #fff;
+    text-align: center;
+  }
+
+  .result-banner .emoji { font-size: 2.5rem; margin-bottom: 10px; }
+
+  .result-banner h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2rem;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+
+  .result-banner p {
+    font-size: 0.85rem;
+    opacity: 0.85;
+    font-weight: 300;
+    letter-spacing: 0.03em;
+  }
+
+  .result-body { padding: 28px 32px 32px; }
+
+  .result-desc {
+    font-size: 0.92rem;
+    color: #5a4a3a;
+    line-height: 1.7;
+    margin-bottom: 24px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--sand);
+  }
+
+  .section-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.2rem;
+    color: var(--terra);
+    font-weight: 600;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .routine-list { list-style: none; margin-bottom: 24px; }
+  .routine-list li {
+    padding: 11px 0;
+    border-bottom: 1px solid #f0ebe3;
+    font-size: 0.88rem;
+    color: #4a3a2a;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+  .routine-list li:last-child { border-bottom: none; }
+  .step-num {
+    background: var(--sand);
+    color: var(--terra);
+    border-radius: 50%;
+    width: 22px; height: 22px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .step-text strong { display: block; font-weight: 500; margin-bottom: 2px; }
+  .step-text span { color: #8a7a6a; font-size: 0.82rem; }
+
+  .tips-box {
+    background: #f7f2ec;
+    border-left: 3px solid var(--blush);
+    border-radius: 0 8px 8px 0;
+    padding: 14px 16px;
+    margin-bottom: 24px;
+    font-size: 0.85rem;
+    color: #5a4a3a;
+    line-height: 1.6;
+  }
+
+  .btn-restart {
+    width: 100%;
+    background: none;
+    border: 1.5px solid var(--terra);
+    color: var(--terra);
+    border-radius: 50px;
+    padding: 13px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.02em;
+  }
+  .btn-restart:hover { background: var(--terra); color: #fff; }
+
+  .hidden { display: none; }
+</style>
+</head>
+<body>
+<div class="quiz-wrap">
+  <div class="quiz-header">
+    <h1>✦ Skincare Quiz</h1>
+    <p>Khám phá loại da & routine phù hợp với bạn</p>
+  </div>
+
+  <!-- QUIZ SECTION -->
+  <div id="quiz-section">
+    <div class="progress-label"><span id="q-num">1</span> / 10</div>
+    <div class="progress-bar">
+      <div class="progress-fill" id="progress-fill" style="width:10%"></div>
+    </div>
+
+    <div class="question-card" id="question-card">
+      <div class="question-num" id="q-label">Câu hỏi 01</div>
+      <div class="question-text" id="q-text"></div>
+      <div class="options" id="options-wrap"></div>
+      <div class="nav-row">
+        <button class="btn-back" id="btn-back" onclick="goBack()">← Quay lại</button>
+        <button class="btn-next" id="btn-next" onclick="goNext()" disabled>Tiếp theo →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESULT SECTION -->
+  <div id="result-section" class="hidden"></div>
+</div>
+
+<script>
+const questions = [
+  {
+    text: "Sau khi rửa mặt xong và không dưỡng gì, bạn cảm thấy da như thế nào?",
+    options: [
+      { label: "Căng, khô, có thể bong tróc", scores: { dry: 3 } },
+      { label: "Bóng dầu nhanh chóng, đặc biệt vùng chữ T", scores: { oily: 3 } },
+      { label: "Vùng chữ T dầu, má bình thường hoặc hơi khô", scores: { combo: 3 } },
+      { label: "Bình thường, không khó chịu gì", scores: { normal: 3 } },
+    ]
+  },
+  {
+    text: "Vào buổi trưa, da bạn trông như thế nào nếu không touch-up?",
+    options: [
+      { label: "Vẫn khô hoặc bong nhẹ ở một số vùng", scores: { dry: 2 } },
+      { label: "Bóng dầu toàn mặt", scores: { oily: 2 } },
+      { label: "Chỉ vùng mũi và trán bóng", scores: { combo: 2 } },
+      { label: "Gần như không thay đổi nhiều", scores: { normal: 2 } },
+    ]
+  },
+  {
+    text: "Lỗ chân lông của bạn trông thế nào?",
+    options: [
+      { label: "Hầu như không thấy lỗ chân lông", scores: { dry: 2 } },
+      { label: "To và thấy rõ, đặc biệt vùng mũi", scores: { oily: 2 } },
+      { label: "To ở vùng chữ T, nhỏ hơn ở má", scores: { combo: 2 } },
+      { label: "Bình thường, không to cũng không nhỏ bất thường", scores: { normal: 2 } },
+    ]
+  },
+  {
+    text: "Da bạn phản ứng thế nào khi thử sản phẩm mới?",
+    options: [
+      { label: "Hay bị đỏ, ngứa hoặc rát", scores: { sensitive: 3 } },
+      { label: "Thường bị nổi mụn", scores: { oily: 1, acne: 2 } },
+      { label: "Ít khi có phản ứng", scores: { normal: 2, dry: 1 } },
+      { label: "Tùy sản phẩm, đôi khi kích ứng", scores: { sensitive: 1, combo: 1 } },
+    ]
+  },
+  {
+    text: "Bạn có thường xuyên bị nổi mụn không?",
+    options: [
+      { label: "Thường xuyên, mụn viêm, đầu trắng/đen", scores: { oily: 2, acne: 2 } },
+      { label: "Thỉnh thoảng, đặc biệt kỳ kinh nguyệt", scores: { combo: 1, acne: 1 } },
+      { label: "Rất hiếm khi", scores: { dry: 1, normal: 1 } },
+      { label: "Không bao giờ hoặc gần như không", scores: { normal: 2, dry: 1 } },
+    ]
+  },
+  {
+    text: "Khi thời tiết hanh khô hoặc dùng điều hòa nhiều, da bạn:",
+    options: [
+      { label: "Khô và bong tróc rõ rệt", scores: { dry: 3 } },
+      { label: "Vẫn dầu như thường, không khác gì", scores: { oily: 2 } },
+      { label: "Má hơi khô nhưng vùng T vẫn dầu", scores: { combo: 2 } },
+      { label: "Hơi căng nhẹ nhưng không đáng lo", scores: { normal: 1, dry: 1 } },
+    ]
+  },
+  {
+    text: "Bạn mô tả tone da và bề mặt da của mình thế nào?",
+    options: [
+      { label: "Da đều màu, mịn, ít vấn đề", scores: { normal: 3 } },
+      { label: "Da hay bóng, thâm mụn hoặc lỗ chân lông to", scores: { oily: 2 } },
+      { label: "Da hay sần, đỏ, hoặc có vảy nhỏ", scores: { dry: 2, sensitive: 1 } },
+      { label: "Vùng T bóng, vùng má đều màu hơn", scores: { combo: 3 } },
+    ]
+  },
+  {
+    text: "Sau khi thoa kem dưỡng ẩm thông thường, bạn thấy:",
+    options: [
+      { label: "Vẫn thấy da chưa đủ ẩm, cần thoa thêm", scores: { dry: 3 } },
+      { label: "Da nặng, bít lỗ chân lông, dễ nổi mụn", scores: { oily: 2 } },
+      { label: "Vùng T bóng hơn, má ổn", scores: { combo: 2 } },
+      { label: "Da cảm thấy cân bằng, dễ chịu", scores: { normal: 3 } },
+    ]
+  },
+  {
+    text: "Khi ra nắng hoặc tiếp xúc gió, da bạn:",
+    options: [
+      { label: "Đỏ và kích ứng nhanh chóng", scores: { sensitive: 3 } },
+      { label: "Bóng dầu nhiều hơn bình thường", scores: { oily: 2 } },
+      { label: "Căng và khô hơn", scores: { dry: 2 } },
+      { label: "Không thay đổi nhiều", scores: { normal: 2 } },
+    ]
+  },
+  {
+    text: "Bạn thường dùng bao nhiêu bước skincare hiện tại?",
+    options: [
+      { label: "Tối thiểu: chỉ rửa mặt & kem dưỡng", scores: { normal: 1, oily: 1 } },
+      { label: "3-4 bước cơ bản", scores: { combo: 1, dry: 1 } },
+      { label: "5+ bước, da tôi cần nhiều dưỡng", scores: { dry: 2, sensitive: 1 } },
+      { label: "Chưa có routine ổn định", scores: { normal: 1 } },
+    ]
+  },
+];
+
+const skinTypes = {
+  oily: {
+    name: "Da Dầu",
+    emoji: "✨",
+    desc: "Da bạn tiết nhiều dầu, đặc biệt vùng chữ T. Lỗ chân lông thường to và dễ bị tắc, dễ nổi mụn đầu đen/đầu trắng. Điểm cộng: da dầu lão hóa chậm hơn và ít nhăn hơn!",
+    am: [
+      { step: "Rửa mặt", note: "Sữa rửa mặt dạng gel, có salicylic acid hoặc niacinamide" },
+      { step: "Toner", note: "Toner không cồn, giúp se khít lỗ chân lông" },
+      { step: "Serum (tùy chọn)", note: "Niacinamide 5-10% để kiểm soát dầu" },
+      { step: "Kem dưỡng", note: "Gel lotion nhẹ, oil-free, không gây bít lỗ chân lông" },
+      { step: "Kem chống nắng", note: "SPF 50+, dạng gel hoặc fluid không bóng" },
+    ],
+    pm: [
+      { step: "Tẩy trang", note: "Micellar water hoặc cleansing oil nếu có trang điểm" },
+      { step: "Rửa mặt", note: "Sữa rửa mặt dạng foam nhẹ" },
+      { step: "Toner cân bằng", note: "AHA/BHA nhẹ 2-3 lần/tuần để thông lỗ chân lông" },
+      { step: "Kem dưỡng tối", note: "Gel dưỡng ẩm nhẹ, thấm nhanh" },
+    ],
+    tips: "⚡ Tránh rửa mặt quá nhiều lần — rửa nhiều khiến da bù dầu nhiều hơn! Chỉ nên rửa mặt tối đa 2 lần/ngày."
+  },
+  dry: {
+    name: "Da Khô",
+    emoji: "🌸",
+    desc: "Da bạn thiếu độ ẩm và dầu tự nhiên, dễ căng, bong tróc và có cảm giác khó chịu. Da khô cần được dưỡng ẩm sâu và bảo vệ hàng rào da cẩn thận.",
+    am: [
+      { step: "Rửa mặt", note: "Sữa rửa mặt dạng cream hoặc lotion, không tạo bọt" },
+      { step: "Toner", note: "Toner dưỡng ẩm có hyaluronic acid, glycerin" },
+      { step: "Serum", note: "Hyaluronic acid hoặc serum dưỡng ẩm sâu" },
+      { step: "Kem dưỡng", note: "Kem dày, rich, có ceramide hoặc shea butter" },
+      { step: "Kem chống nắng", note: "SPF 50+, dạng cream có dưỡng ẩm" },
+    ],
+    pm: [
+      { step: "Tẩy trang nhẹ nhàng", note: "Cleansing balm hoặc dầu tẩy trang" },
+      { step: "Rửa mặt", note: "Gel hoặc cream rửa mặt không foam" },
+      { step: "Essence/Toner", note: "Essence giàu dưỡng chất, thoa khi da còn ẩm" },
+      { step: "Serum dưỡng ẩm", note: "Peptide hoặc hyaluronic acid" },
+      { step: "Kem dưỡng ban đêm", note: "Rich cream hoặc sleeping mask 2-3 lần/tuần" },
+    ],
+    tips: "💧 Thoa kem dưỡng ngay sau khi rửa mặt (trong vòng 60 giây) khi da còn ẩm để giữ nước tốt hơn!"
+  },
+  combo: {
+    name: "Da Hỗn Hợp",
+    emoji: "🌿",
+    desc: "Da bạn có sự kết hợp giữa vùng dầu (chữ T: trán, mũi, cằm) và vùng khô hoặc bình thường (má). Đây là loại da phổ biến nhất và cần cách chăm sóc cân bằng.",
+    am: [
+      { step: "Rửa mặt", note: "Gel rửa mặt nhẹ, cân bằng pH, không quá mạnh" },
+      { step: "Toner", note: "Toner cân bằng, không cồn, có niacinamide" },
+      { step: "Serum", note: "Niacinamide — vừa kiểm soát dầu vừa dưỡng ẩm" },
+      { step: "Kem dưỡng", note: "Gel lotion nhẹ; vùng má có thể thêm kem dày hơn" },
+      { step: "Kem chống nắng", note: "SPF 50+, dạng fluid hoặc gel nhẹ" },
+    ],
+    pm: [
+      { step: "Tẩy trang", note: "Micellar water nhẹ nhàng" },
+      { step: "Rửa mặt", note: "Sữa rửa mặt cân bằng" },
+      { step: "Toner cân bằng", note: "BHA nhẹ 1-2 lần/tuần cho vùng chữ T" },
+      { step: "Dưỡng ẩm", note: "Gel kem nhẹ; thêm cream riêng cho vùng má nếu cần" },
+    ],
+    tips: "🎯 Thử multi-masking: dùng mặt nạ đất sét cho vùng T và mặt nạ dưỡng ẩm cho má cùng lúc!"
+  },
+  sensitive: {
+    name: "Da Nhạy Cảm",
+    emoji: "🌷",
+    desc: "Da bạn phản ứng dễ dàng với các tác nhân bên ngoài như sản phẩm mới, thời tiết, nước cứng... Da nhạy cảm cần được chăm sóc nhẹ nhàng, tránh thành phần kích ứng.",
+    am: [
+      { step: "Rửa mặt", note: "Sữa rửa mặt dịu nhẹ, fragrance-free, pH cân bằng" },
+      { step: "Toner làm dịu", note: "Centella asiatica, aloe vera, không cồn, không hương liệu" },
+      { step: "Serum phục hồi", note: "Centella, madecassoside, niacinamide nồng độ thấp (<5%)" },
+      { step: "Kem dưỡng", note: "Ceramide + peptide, fragrance-free, hypoallergenic" },
+      { step: "Kem chống nắng", note: "Mineral sunscreen (zinc oxide/titanium dioxide), dịu nhẹ" },
+    ],
+    pm: [
+      { step: "Tẩy trang", note: "Micellar water dành cho da nhạy cảm, không chà xát" },
+      { step: "Rửa mặt", note: "Dùng nước ấm vừa, không nóng hoặc lạnh" },
+      { step: "Toner làm dịu", note: "Thoa nhẹ nhàng bằng tay, không dùng bông" },
+      { step: "Kem dưỡng ban đêm", note: "Barrier repair cream có ceramide" },
+    ],
+    tips: "⚠️ Luôn patch test sản phẩm mới trong 24-48 giờ trước khi dùng toàn mặt. Tránh acid mạnh và retinol nồng độ cao!"
+  },
+  normal: {
+    name: "Da Thường",
+    emoji: "💫",
+    desc: "Bạn may mắn có làn da cân bằng, không quá dầu cũng không quá khô, ít nhạy cảm và ít vấn đề. Mục tiêu chính là duy trì và bảo vệ làn da khỏe mạnh này!",
+    am: [
+      { step: "Rửa mặt", note: "Sữa rửa mặt nhẹ dạng gel hoặc foam nhẹ" },
+      { step: "Toner (tùy chọn)", note: "Toner dưỡng ẩm hoặc antioxidant" },
+      { step: "Serum vitamin C", note: "Chống oxy hóa, giúp da sáng và đều màu" },
+      { step: "Kem dưỡng nhẹ", note: "Lotion hoặc gel kem tùy mùa" },
+      { step: "Kem chống nắng", note: "SPF 50+ — bước quan trọng nhất!" },
+    ],
+    pm: [
+      { step: "Tẩy trang (nếu cần)", note: "Micellar water hoặc dầu tẩy trang" },
+      { step: "Rửa mặt", note: "Sữa rửa mặt nhẹ" },
+      { step: "Retinol (tùy chọn)", note: "1-2 lần/tuần để chống lão hóa sớm" },
+      { step: "Kem dưỡng ban đêm", note: "Kem có peptide hoặc hyaluronic acid" },
+    ],
+    tips: "☀️ Kem chống nắng là bước không thể thiếu dù da bạn khỏe! Đây là cách tốt nhất để giữ da đẹp lâu dài."
+  }
+};
+
+let answers = [];
+let current = 0;
+
+function renderQuestion() {
+  const q = questions[current];
+  const pct = ((current + 1) / questions.length) * 100;
+
+  document.getElementById('q-num').textContent = current + 1;
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('q-label').textContent = 'Câu hỏi ' + String(current + 1).padStart(2, '0');
+  document.getElementById('q-text').textContent = q.text;
+
+  const wrap = document.getElementById('options-wrap');
+  wrap.innerHTML = '';
+  q.options.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn' + (answers[current] === i ? ' selected' : '');
+    btn.innerHTML = `<span class="option-dot"></span><span>${opt.label}</span>`;
+    btn.onclick = () => selectOption(i);
+    wrap.appendChild(btn);
+  });
+
+  document.getElementById('btn-back').style.visibility = current === 0 ? 'hidden' : 'visible';
+  document.getElementById('btn-next').disabled = answers[current] === undefined;
+  document.getElementById('btn-next').textContent =
+    current === questions.length - 1 ? 'Xem kết quả ✦' : 'Tiếp theo →';
+
+  // re-animate
+  const card = document.getElementById('question-card');
+  card.style.animation = 'none';
+  requestAnimationFrame(() => { card.style.animation = 'fadeUp 0.4s ease'; });
+}
+
+function selectOption(i) {
+  answers[current] = i;
+  document.querySelectorAll('.option-btn').forEach((btn, idx) => {
+    btn.classList.toggle('selected', idx === i);
+  });
+  document.getElementById('btn-next').disabled = false;
+}
+
+function goNext() {
+  if (answers[current] === undefined) return;
+  if (current < questions.length - 1) {
+    current++;
+    renderQuestion();
+  } else {
+    showResult();
+  }
+}
+
+function goBack() {
+  if (current > 0) { current--; renderQuestion(); }
+}
+
+function showResult() {
+  // tally scores
+  const scores = { oily: 0, dry: 0, combo: 0, sensitive: 0, normal: 0 };
+  questions.forEach((q, qi) => {
+    const ai = answers[qi];
+    if (ai === undefined) return;
+    const s = q.options[ai].scores;
+    for (const k in s) { if (scores[k] !== undefined) scores[k] += s[k]; }
+  });
+
+  // find winner
+  let best = 'normal', bestScore = -1;
+  for (const k in scores) {
+    if (scores[k] > bestScore) { bestScore = scores[k]; best = k; }
+  }
+
+  const skin = skinTypes[best];
+  document.getElementById('quiz-section').classList.add('hidden');
+
+  const rs = document.getElementById('result-section');
+  rs.classList.remove('hidden');
+
+  const amSteps = skin.am.map((s, i) => `
+    <li><span class="step-num">${i + 1}</span>
+      <span class="step-text"><strong>${s.step}</strong><span>${s.note}</span></span>
+    </li>`).join('');
+
+  const pmSteps = skin.pm.map((s, i) => `
+    <li><span class="step-num">${i + 1}</span>
+      <span class="step-text"><strong>${s.step}</strong><span>${s.note}</span></span>
+    </li>`).join('');
+
+  rs.innerHTML = `
+    <div class="result-card">
+      <div class="result-banner">
+        <div class="emoji">${skin.emoji}</div>
+        <h2>Bạn có ${skin.name}</h2>
+        <p>Kết quả dựa trên ${questions.length} câu trả lời của bạn</p>
+      </div>
+      <div class="result-body">
+        <p class="result-desc">${skin.desc}</p>
+
+        <div class="section-title">🌅 Routine Buổi Sáng</div>
+        <ul class="routine-list">${amSteps}</ul>
+
+        <div class="section-title">🌙 Routine Buổi Tối</div>
+        <ul class="routine-list">${pmSteps}</ul>
+
+        <div class="tips-box">${skin.tips}</div>
+
+        <button class="btn-restart" onclick="restart()">Làm lại quiz →</button>
+      </div>
+    </div>`;
+}
+
+function restart() {
+  answers = [];
+  current = 0;
+  document.getElementById('result-section').classList.add('hidden');
+  document.getElementById('quiz-section').classList.remove('hidden');
+  renderQuestion();
+}
+
+renderQuestion();
+</script>
+</body>
+</html>
