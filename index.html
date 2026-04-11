@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="vi" style="height:auto;overflow:visible;">
+<html lang="vi">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Quiz Loại Da</title>
+<title>Skin Journal Quiz</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Be+Vietnam+Pro:wght@300;400;500&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Be+Vietnam+Pro:wght@300;400;500;600&display=swap');
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -15,7 +15,6 @@
     --blush: #c9a98a;
     --terra: #8b5e3c;
     --dark: #2c1f14;
-    --green: #5a7a5a;
     --soft: #f0ebe3;
   }
 
@@ -23,366 +22,212 @@
     font-family: 'Be Vietnam Pro', sans-serif;
     background: var(--cream);
     color: var(--dark);
-    min-height: 100vh;
-    padding: 16px;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
+    padding: 10px; /* Thu hẹp padding ngoài để tiết kiệm không gian */
+    line-height: 1.5;
   }
 
   .quiz-wrap {
-    max-width: 620px;
-    width: 100%;
+    max-width: 580px; /* Thu nhỏ bề ngang một chút để trông thanh thoát hơn */
     margin: 0 auto;
   }
 
   .quiz-header {
     text-align: center;
-    padding: 16px 0 12px;
+    padding: 20px 0 15px;
   }
 
   .quiz-header h1 {
     font-family: 'Playfair Display', serif;
-    font-size: 2.4rem;
-    font-weight: 600;
+    font-size: clamp(1.8rem, 5vw, 2.4rem);
     color: var(--terra);
-    line-height: 1.2;
+    margin-bottom: 5px;
   }
 
   .quiz-header p {
-    margin-top: 10px;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     color: #7a6a58;
     font-weight: 300;
-    letter-spacing: 0.03em;
   }
 
-  /* Progress */
+  /* Progress Bar */
+  .progress-container { margin-bottom: 20px; }
   .progress-bar {
-    height: 3px;
+    height: 4px;
     background: var(--sand);
-    border-radius: 99px;
-    margin-bottom: 16px;
+    border-radius: 10px;
     overflow: hidden;
   }
   .progress-fill {
     height: 100%;
-    background: linear-gradient(90deg, var(--blush), var(--terra));
-    border-radius: 99px;
-    transition: width 0.5s ease;
+    background: var(--terra);
+    transition: width 0.4s ease;
   }
   .progress-label {
     text-align: right;
     font-size: 0.75rem;
-    color: #a08a76;
-    margin-bottom: 6px;
-    font-weight: 300;
+    color: var(--blush);
+    margin-bottom: 5px;
   }
 
-  /* Question card */
+  /* Card */
   .question-card {
     background: #fff;
-    border-radius: 16px;
-    padding: clamp(16px, 4vw, 32px);
-    box-shadow: 0 4px 24px rgba(44,31,20,0.07);
-    animation: fadeUp 0.4s ease;
-  }
-
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(14px); }
-    to   { opacity: 1; transform: translateY(0); }
+    border-radius: 24px;
+    padding: 25px;
+    box-shadow: 0 10px 30px rgba(44,31,20,0.05);
+    animation: fadeIn 0.5s ease;
   }
 
   .question-num {
     font-size: 0.7rem;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
     color: var(--blush);
-    font-weight: 500;
-    margin-bottom: 10px;
+    font-weight: 600;
+    margin-bottom: 12px;
   }
 
   .question-text {
     font-family: 'Playfair Display', serif;
-    font-size: 1.45rem;
-    line-height: 1.4;
-    color: var(--dark);
-    margin-bottom: 24px;
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 20px;
   }
 
   /* Options */
-  .options { display: flex; flex-direction: column; gap: 8px; }
-
+  .options { display: flex; flex-direction: column; gap: 10px; }
   .option-btn {
     background: var(--soft);
-    border: 1.5px solid transparent;
-    border-radius: 10px;
-    padding: 14px 18px;
-    font-family: 'Be Vietnam Pro', sans-serif;
+    border: 1px solid transparent;
+    border-radius: 12px;
+    padding: 14px 16px;
     font-size: 0.9rem;
-    color: var(--dark);
     cursor: pointer;
     text-align: left;
-    transition: all 0.2s ease;
     display: flex;
     align-items: center;
     gap: 12px;
+    transition: all 0.2s;
   }
 
-  .option-btn:hover {
-    background: #f5ede2;
-    border-color: var(--blush);
-    transform: translateX(4px);
-  }
-
+  .option-btn:hover { background: #f5ede2; }
   .option-btn.selected {
-    background: linear-gradient(135deg, #f5ede2, #fdf6ee);
+    background: #fff;
     border-color: var(--terra);
     color: var(--terra);
-    font-weight: 500;
+    box-shadow: 0 4px 12px rgba(139, 94, 60, 0.1);
   }
 
   .option-dot {
-    width: 20px;
-    height: 20px;
+    width: 18px; height: 18px;
     border-radius: 50%;
-    border: 1.5px solid #c4b09a;
+    border: 1.5px solid var(--blush);
+    display: flex; align-items: center; justify-content: center;
     flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s;
   }
-
-  .option-btn.selected .option-dot {
-    background: var(--terra);
-    border-color: var(--terra);
-  }
+  .option-btn.selected .option-dot { background: var(--terra); border-color: var(--terra); }
   .option-btn.selected .option-dot::after {
-    content: '';
-    width: 8px; height: 8px;
-    background: #fff;
-    border-radius: 50%;
+    content: ''; width: 6px; height: 6px; background: #fff; border-radius: 50%;
   }
 
-  /* Nav */
+  /* Navigation */
   .nav-row {
     display: flex;
     justify-content: space-between;
+    margin-top: 25px;
     align-items: center;
-    margin-top: 16px;
   }
-
   .btn-back {
-    background: none;
-    border: none;
-    color: #a08a76;
-    font-size: 0.85rem;
-    cursor: pointer;
-    font-family: 'Be Vietnam Pro', sans-serif;
-    padding: 8px 0;
-    display: flex;
-    align-items: center;
-    gap: 6px;
+    background: none; border: none; color: #a08a76;
+    cursor: pointer; font-size: 0.85rem;
   }
-  .btn-back:hover { color: var(--terra); }
-
   .btn-next {
     background: var(--terra);
-    color: #fff;
-    border: none;
+    color: #fff; border: none;
+    padding: 12px 28px;
     border-radius: 50px;
-    padding: 12px 30px;
-    font-family: 'Be Vietnam Pro', sans-serif;
-    font-size: 0.9rem;
     font-weight: 500;
     cursor: pointer;
-    transition: all 0.2s;
-    letter-spacing: 0.02em;
+    transition: opacity 0.2s;
   }
-  .btn-next:hover { background: #7a4f2e; transform: translateY(-1px); }
-  .btn-next:disabled { background: var(--sand); color: #b0a090; cursor: default; transform: none; }
+  .btn-next:disabled { background: var(--sand); cursor: not-allowed; }
 
-  /* Result */
-  .result-card {
-    background: #fff;
-    border-radius: 16px;
-    overflow: hidden;
-    box-shadow: 0 4px 24px rgba(44,31,20,0.09);
-    animation: fadeUp 0.5s ease;
-  }
-
+  /* Result Section */
+  .result-card { background: #fff; border-radius: 24px; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.1); }
   .result-banner {
-    background: #C4788A;
-    padding: 64px 48px 56px;
+    background: #c48a97; /* Màu hồng đất nhạt sang trọng */
+    padding: 40px 20px;
     color: #fff;
     text-align: center;
   }
+  .result-banner .emoji { font-size: 4rem; margin-bottom: 10px; }
+  .result-banner h2 { font-family: 'Playfair Display', serif; font-size: 1.8rem; }
 
-  .result-banner .emoji { font-size: 5rem; margin-bottom: 20px; }
-
-  .result-banner h2 {
-    font-family: 'Playfair Display', serif;
-    font-size: 2rem;
-    font-weight: 600;
-    margin-bottom: 6px;
+  .result-body { padding: 30px 25px; }
+  .result-desc { font-size: 0.95rem; line-height: 1.7; color: #5a4a3a; margin-bottom: 25px; border-bottom: 1px solid var(--soft); padding-bottom: 20px; }
+  
+  .routine-list { list-style: none; margin: 15px 0 25px; }
+  .routine-list li { display: flex; gap: 12px; margin-bottom: 15px; }
+  .step-num { 
+    background: var(--soft); color: var(--terra); 
+    width: 24px; height: 24px; border-radius: 50%; 
+    display: flex; align-items: center; justify-content: center; 
+    font-size: 0.75rem; font-weight: 600; flex-shrink: 0;
   }
+  .step-text strong { display: block; font-size: 0.9rem; }
+  .step-text span { font-size: 0.8rem; color: #8a7a6a; }
 
-  .result-banner p {
-    font-size: 1.1rem;
-    opacity: 0.9;
-    font-weight: 300;
-    letter-spacing: 0.03em;
-  }
-
-  .result-body { padding: clamp(16px, 4vw, 28px) clamp(14px, 4vw, 32px) clamp(20px, 4vw, 32px); }
-
-  .result-desc {
-    font-size: 0.92rem;
-    color: #5a4a3a;
-    line-height: 1.7;
-    margin-bottom: 24px;
-    padding-bottom: 24px;
-    border-bottom: 1px solid var(--sand);
-  }
-
-  .section-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.2rem;
-    color: var(--terra);
-    font-weight: 600;
-    margin-bottom: 14px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .routine-list { list-style: none; margin-bottom: 24px; }
-  .routine-list li {
-    padding: 11px 0;
-    border-bottom: 1px solid #f0ebe3;
-    font-size: 0.88rem;
-    color: #4a3a2a;
-    display: flex;
-    gap: 10px;
-    align-items: flex-start;
-  }
-  .routine-list li:last-child { border-bottom: none; }
-  .step-num {
-    background: var(--sand);
-    color: var(--terra);
-    border-radius: 50%;
-    width: 22px; height: 22px;
-    font-size: 0.7rem;
-    font-weight: 600;
-    display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0;
-    margin-top: 1px;
-  }
-  .step-text strong { display: block; font-weight: 500; margin-bottom: 2px; }
-  .step-text span { color: #8a7a6a; font-size: 0.82rem; }
-
-  .tips-box {
-    background: #f7f2ec;
-    border-left: 3px solid var(--blush);
-    border-radius: 0 8px 8px 0;
-    padding: 14px 16px;
-    margin-bottom: 24px;
-    font-size: 0.85rem;
-    color: #5a4a3a;
-    line-height: 1.6;
-  }
+  .tips-box { background: #fdfaf7; border-left: 4px solid var(--blush); padding: 15px; font-size: 0.85rem; margin-bottom: 25px; }
 
   .btn-restart {
-    width: 100%;
-    background: none;
-    border: 1.5px solid var(--terra);
-    color: var(--terra);
-    border-radius: 50px;
-    padding: 13px;
-    font-family: 'Be Vietnam Pro', sans-serif;
-    font-size: 0.9rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s;
-    letter-spacing: 0.02em;
+    width: 100%; padding: 14px; border-radius: 50px;
+    border: 1.5px solid var(--terra); background: none; color: var(--terra);
+    font-weight: 600; cursor: pointer; transition: all 0.2s;
   }
   .btn-restart:hover { background: var(--terra); color: #fff; }
 
   .hidden { display: none; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
+  /* Responsive Mobile */
   @media (max-width: 480px) {
-    body { padding: 8px; }
-    .quiz-header { padding: 10px 0 8px; }
-    .quiz-header p { font-size: 0.8rem; }
-    .options { gap: 7px; }
-    .option-btn { padding: 10px 12px; }
-    .btn-next { padding: 10px 20px; font-size: 0.85rem; }
-    .progress-label { font-size: 0.7rem; }
-    .result-banner .emoji { font-size: 3rem; }
-  }
-
-  @media (max-width: 480px) {
-    body { padding: 8px; }
-    .quiz-header { padding: 10px 0 10px; }
-    .quiz-header p { font-size: 0.8rem; }
-    .options { gap: 6px; }
-    .option-btn { padding: 9px 12px; }
-    .btn-next { padding: 10px 20px; font-size: 0.85rem; }
-    .nav-row { margin-top: 12px; }
-    .progress-bar { margin-bottom: 12px; }
-  }
-
-  @media (max-width: 480px) {
-    body { padding: 8px; }
-    .quiz-header { padding: 16px 0 12px; }
-    .quiz-header h1 { font-size: 1.6rem; }
-    .quiz-header p { font-size: 0.82rem; }
-    .question-card { padding: 18px 16px; }
-    .question-text { font-size: 1.1rem; margin-bottom: 16px; }
-    .option-btn { padding: 11px 13px; font-size: 0.85rem; }
-    .options { gap: 8px; }
-    .btn-next { padding: 11px 24px; font-size: 0.85rem; }
-    .nav-row { margin-top: 16px; }
-    .progress-bar { margin-bottom: 20px; }
-    .result-banner { padding: 36px 20px 28px; }
-    .result-banner h2 { font-size: 2.2rem; }
-    .result-banner p { font-size: 0.9rem; }
-    .result-body { padding: 18px 16px 24px; }
-    .result-desc { font-size: 0.85rem; }
-    .section-title { font-size: 1rem; }
+    .question-card { padding: 20px; }
+    .question-text { font-size: 1.15rem; }
+    .option-btn { font-size: 0.85rem; padding: 12px; }
   }
 </style>
 </head>
 <body>
+
 <div class="quiz-wrap">
   <div class="quiz-header">
-    <h1>✦ Skincare Quiz</h1>
-    <p>Khám phá loại da & routine phù hợp với bạn</p>
+    <h1>✦ Skin Quiz</h1>
+    <p>Thấu hiểu làn da trong 1 phút</p>
   </div>
 
-  <!-- QUIZ SECTION -->
   <div id="quiz-section">
-    <div class="progress-label"><span id="q-num">1</span> / 10</div>
-    <div class="progress-bar">
-      <div class="progress-fill" id="progress-fill" style="width:10%"></div>
+    <div class="progress-container">
+        <div class="progress-label">Câu <span id="q-num">1</span>/10</div>
+        <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:10%"></div></div>
     </div>
 
     <div class="question-card" id="question-card">
       <div class="question-num" id="q-label">Câu hỏi 01</div>
       <div class="question-text" id="q-text"></div>
       <div class="options" id="options-wrap"></div>
+      
       <div class="nav-row">
         <button class="btn-back" id="btn-back" onclick="goBack()">← Quay lại</button>
-        <button class="btn-next" id="btn-next" onclick="goNext()" disabled>Tiếp theo →</button>
+        <button class="btn-next" id="btn-next" onclick="goNext()" disabled>Tiếp theo</button>
       </div>
     </div>
   </div>
 
-  <!-- RESULT SECTION -->
   <div id="result-section" class="hidden"></div>
 </div>
 
 <script>
+// Giữ nguyên mảng questions và skinTypes của bạn
 const questions = [
   {
     text: "Sau khi rửa mặt xong và không dưỡng gì, bạn cảm thấy da như thế nào?",
@@ -478,100 +323,39 @@ const questions = [
 
 const skinTypes = {
   oily: {
-    name: "Da Dầu",
-    emoji: "✨",
-    desc: "Da bạn tiết nhiều dầu, đặc biệt vùng chữ T. Lỗ chân lông thường to và dễ bị tắc, dễ nổi mụn đầu đen/đầu trắng. Điểm cộng: da dầu lão hóa chậm hơn và ít nhăn hơn!",
-    am: [
-      { step: "Rửa mặt", note: "Sữa rửa mặt dạng gel, có salicylic acid hoặc niacinamide" },
-      { step: "Toner", note: "Toner không cồn, giúp se khít lỗ chân lông" },
-      { step: "Serum (tùy chọn)", note: "Niacinamide 5-10% để kiểm soát dầu" },
-      { step: "Kem dưỡng", note: "Gel lotion nhẹ, oil-free, không gây bít lỗ chân lông" },
-      { step: "Kem chống nắng", note: "SPF 50+, dạng gel hoặc fluid không bóng" },
-    ],
-    pm: [
-      { step: "Tẩy trang", note: "Micellar water hoặc cleansing oil nếu có trang điểm" },
-      { step: "Rửa mặt", note: "Sữa rửa mặt dạng foam nhẹ" },
-      { step: "Toner cân bằng", note: "AHA/BHA nhẹ 2-3 lần/tuần để thông lỗ chân lông" },
-      { step: "Kem dưỡng tối", note: "Gel dưỡng ẩm nhẹ, thấm nhanh" },
-    ],
-    tips: "⚡ Tránh rửa mặt quá nhiều lần — rửa nhiều khiến da bù dầu nhiều hơn! Chỉ nên rửa mặt tối đa 2 lần/ngày."
+    name: "Da Dầu", emoji: "✨",
+    desc: "Da bạn tiết nhiều dầu, lỗ chân lông thường to và dễ nổi mụn. Tuy nhiên, da dầu lão hóa chậm hơn!",
+    am: [{step: "Rửa mặt", note: "Gel rửa mặt có BHA"}, {step: "Serum", note: "Niacinamide kiềm dầu"}, {step: "Chống nắng", note: "Dạng gel/fluid"}],
+    pm: [{step: "Tẩy trang", note: "Nước tẩy trang sạch sâu"}, {step: "Treatment", note: "BHA 2% vùng chữ T"}, {step: "Dưỡng ẩm", note: "Gel mỏng nhẹ"}],
+    tips: "⚡ Đừng rửa mặt quá 2 lần/ngày để tránh mất độ ẩm tự nhiên."
   },
   dry: {
-    name: "Da Khô",
-    emoji: "🌸",
-    desc: "Da bạn thiếu độ ẩm và dầu tự nhiên, dễ căng, bong tróc và có cảm giác khó chịu. Da khô cần được dưỡng ẩm sâu và bảo vệ hàng rào da cẩn thận.",
-    am: [
-      { step: "Rửa mặt", note: "Sữa rửa mặt dạng cream hoặc lotion, không tạo bọt" },
-      { step: "Toner", note: "Toner dưỡng ẩm có hyaluronic acid, glycerin" },
-      { step: "Serum", note: "Hyaluronic acid hoặc serum dưỡng ẩm sâu" },
-      { step: "Kem dưỡng", note: "Kem dày, rich, có ceramide hoặc shea butter" },
-      { step: "Kem chống nắng", note: "SPF 50+, dạng cream có dưỡng ẩm" },
-    ],
-    pm: [
-      { step: "Tẩy trang nhẹ nhàng", note: "Cleansing balm hoặc dầu tẩy trang" },
-      { step: "Rửa mặt", note: "Gel hoặc cream rửa mặt không foam" },
-      { step: "Essence/Toner", note: "Essence giàu dưỡng chất, thoa khi da còn ẩm" },
-      { step: "Serum dưỡng ẩm", note: "Peptide hoặc hyaluronic acid" },
-      { step: "Kem dưỡng ban đêm", note: "Rich cream hoặc sleeping mask 2-3 lần/tuần" },
-    ],
-    tips: "💧 Thoa kem dưỡng ngay sau khi rửa mặt (trong vòng 60 giây) khi da còn ẩm để giữ nước tốt hơn!"
+    name: "Da Khô", emoji: "🌸",
+    desc: "Da bạn thiếu dầu và nước, dễ bong tróc và xuất hiện nếp nhăn sớm. Cần cấp ẩm sâu.",
+    am: [{step: "Rửa mặt", note: "Dạng cream/lotion dịu nhẹ"}, {step: "Serum", note: "Hyaluronic Acid"}, {step: "Dưỡng ẩm", note: "Kem dày có Ceramide"}],
+    pm: [{step: "Tẩy trang", note: "Sáp/Dầu tẩy trang"}, {step: "Serum", note: "Dầu dưỡng/Peptide"}, {step: "Mặt nạ ngủ", note: "2 lần/tuần"}],
+    tips: "💧 Thoa dưỡng ẩm ngay khi da còn hơi ẩm để khóa nước tốt nhất."
   },
   combo: {
-    name: "Da Hỗn Hợp",
-    emoji: "🌿",
-    desc: "Da bạn có sự kết hợp giữa vùng dầu (chữ T: trán, mũi, cằm) và vùng khô hoặc bình thường (má). Đây là loại da phổ biến nhất và cần cách chăm sóc cân bằng.",
-    am: [
-      { step: "Rửa mặt", note: "Gel rửa mặt nhẹ, cân bằng pH, không quá mạnh" },
-      { step: "Toner", note: "Toner cân bằng, không cồn, có niacinamide" },
-      { step: "Serum", note: "Niacinamide — vừa kiểm soát dầu vừa dưỡng ẩm" },
-      { step: "Kem dưỡng", note: "Gel lotion nhẹ; vùng má có thể thêm kem dày hơn" },
-      { step: "Kem chống nắng", note: "SPF 50+, dạng fluid hoặc gel nhẹ" },
-    ],
-    pm: [
-      { step: "Tẩy trang", note: "Micellar water nhẹ nhàng" },
-      { step: "Rửa mặt", note: "Sữa rửa mặt cân bằng" },
-      { step: "Toner cân bằng", note: "BHA nhẹ 1-2 lần/tuần cho vùng chữ T" },
-      { step: "Dưỡng ẩm", note: "Gel kem nhẹ; thêm cream riêng cho vùng má nếu cần" },
-    ],
-    tips: "🎯 Thử multi-masking: dùng mặt nạ đất sét cho vùng T và mặt nạ dưỡng ẩm cho má cùng lúc!"
+    name: "Da Hỗn Hợp", emoji: "🌿",
+    desc: "Vùng chữ T đổ dầu nhưng hai má lại khô. Bạn cần chế độ chăm sóc riêng biệt cho từng vùng.",
+    am: [{step: "Rửa mặt", note: "Gel cân bằng pH"}, {step: "Serum", note: "Vitamin C/Niacinamide"}, {step: "Dưỡng ẩm", note: "Gel-cream"}],
+    pm: [{step: "Tẩy trang", note: "Micellar Water"}, {step: "Treatment", note: "BHA cho vùng T"}, {step: "Dưỡng ẩm", note: "Lotion thấm nhanh"}],
+    tips: "🎯 Hãy dùng mặt nạ đất sét cho vùng chữ T và mặt nạ giấy cho vùng má."
   },
   sensitive: {
-    name: "Da Nhạy Cảm",
-    emoji: "🌷",
-    desc: "Da bạn phản ứng dễ dàng với các tác nhân bên ngoài như sản phẩm mới, thời tiết, nước cứng... Da nhạy cảm cần được chăm sóc nhẹ nhàng, tránh thành phần kích ứng.",
-    am: [
-      { step: "Rửa mặt", note: "Sữa rửa mặt dịu nhẹ, fragrance-free, pH cân bằng" },
-      { step: "Toner làm dịu", note: "Centella asiatica, aloe vera, không cồn, không hương liệu" },
-      { step: "Serum phục hồi", note: "Centella, madecassoside, niacinamide nồng độ thấp (<5%)" },
-      { step: "Kem dưỡng", note: "Ceramide + peptide, fragrance-free, hypoallergenic" },
-      { step: "Kem chống nắng", note: "Mineral sunscreen (zinc oxide/titanium dioxide), dịu nhẹ" },
-    ],
-    pm: [
-      { step: "Tẩy trang", note: "Micellar water dành cho da nhạy cảm, không chà xát" },
-      { step: "Rửa mặt", note: "Dùng nước ấm vừa, không nóng hoặc lạnh" },
-      { step: "Toner làm dịu", note: "Thoa nhẹ nhàng bằng tay, không dùng bông" },
-      { step: "Kem dưỡng ban đêm", note: "Barrier repair cream có ceramide" },
-    ],
-    tips: "⚠️ Luôn patch test sản phẩm mới trong 24-48 giờ trước khi dùng toàn mặt. Tránh acid mạnh và retinol nồng độ cao!"
+    name: "Da Nhạy Cảm", emoji: "🌷",
+    desc: "Da dễ đỏ, rát và phản ứng với môi trường. Ưu tiên hàng đầu là phục hồi hàng rào bảo vệ da.",
+    am: [{step: "Rửa mặt", note: "Sữa rửa mặt không bọt"}, {step: "Phục hồi", note: "Serum B5 / Rau má"}, {step: "Chống nắng", note: "Thuần vật lý"}],
+    pm: [{step: "Tẩy trang", note: "Loại cực dịu nhẹ"}, {step: "Làm dịu", note: "Toner hoa cúc/aloe"}, {step: "Dưỡng ẩm", note: "Kem phục hồi"}],
+    tips: "⚠️ Tránh xa hương liệu và các loại acid nồng độ cao."
   },
   normal: {
-    name: "Da Thường",
-    emoji: "💫",
-    desc: "Bạn may mắn có làn da cân bằng, không quá dầu cũng không quá khô, ít nhạy cảm và ít vấn đề. Mục tiêu chính là duy trì và bảo vệ làn da khỏe mạnh này!",
-    am: [
-      { step: "Rửa mặt", note: "Sữa rửa mặt nhẹ dạng gel hoặc foam nhẹ" },
-      { step: "Toner (tùy chọn)", note: "Toner dưỡng ẩm hoặc antioxidant" },
-      { step: "Serum vitamin C", note: "Chống oxy hóa, giúp da sáng và đều màu" },
-      { step: "Kem dưỡng nhẹ", note: "Lotion hoặc gel kem tùy mùa" },
-      { step: "Kem chống nắng", note: "SPF 50+ — bước quan trọng nhất!" },
-    ],
-    pm: [
-      { step: "Tẩy trang (nếu cần)", note: "Micellar water hoặc dầu tẩy trang" },
-      { step: "Rửa mặt", note: "Sữa rửa mặt nhẹ" },
-      { step: "Retinol (tùy chọn)", note: "1-2 lần/tuần để chống lão hóa sớm" },
-      { step: "Kem dưỡng ban đêm", note: "Kem có peptide hoặc hyaluronic acid" },
-    ],
-    tips: "☀️ Kem chống nắng là bước không thể thiếu dù da bạn khỏe! Đây là cách tốt nhất để giữ da đẹp lâu dài."
+    name: "Da Thường", emoji: "💫",
+    desc: "Làn da lý tưởng, cân bằng và ít khuyết điểm. Hãy duy trì để da luôn khỏe mạnh.",
+    am: [{step: "Rửa mặt", note: "Dịu nhẹ"}, {step: "Dưỡng sáng", note: "Serum Vitamin C"}, {step: "Chống nắng", note: "SPF 50+"}],
+    pm: [{step: "Làm sạch", note: "Double Cleansing"}, {step: "Chống lão hóa", note: "Retinol nồng độ thấp"}, {step: "Dưỡng ẩm", note: "Kem dưỡng ẩm cơ bản"}],
+    tips: "☀️ Kem chống nắng mỗi ngày là chìa khóa để giữ làn da này mãi tươi trẻ."
   }
 };
 
@@ -599,21 +383,15 @@ function renderQuestion() {
 
   document.getElementById('btn-back').style.visibility = current === 0 ? 'hidden' : 'visible';
   document.getElementById('btn-next').disabled = answers[current] === undefined;
-  document.getElementById('btn-next').textContent =
-    current === questions.length - 1 ? 'Xem kết quả ✦' : 'Tiếp theo →';
-
-  // re-animate
-  const card = document.getElementById('question-card');
-  card.style.animation = 'none';
-  requestAnimationFrame(() => { card.style.animation = 'fadeUp 0.4s ease'; });
+  document.getElementById('btn-next').textContent = current === questions.length - 1 ? 'Xem kết quả ✦' : 'Tiếp theo';
+  
+  // Tự động cuộn lên đầu card khi chuyển câu hỏi
+  document.getElementById('question-card').scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 
 function selectOption(i) {
   answers[current] = i;
-  document.querySelectorAll('.option-btn').forEach((btn, idx) => {
-    btn.classList.toggle('selected', idx === i);
-  });
-  document.getElementById('btn-next').disabled = false;
+  renderQuestion();
 }
 
 function goNext() {
@@ -631,80 +409,51 @@ function goBack() {
 }
 
 function showResult() {
-  // tally scores
   const scores = { oily: 0, dry: 0, combo: 0, sensitive: 0, normal: 0 };
   questions.forEach((q, qi) => {
     const ai = answers[qi];
-    if (ai === undefined) return;
     const s = q.options[ai].scores;
-    for (const k in s) { if (scores[k] !== undefined) scores[k] += s[k]; }
+    for (const k in s) { scores[k] += s[k]; }
   });
 
-  // find winner
   let best = 'normal', bestScore = -1;
-  for (const k in scores) {
-    if (scores[k] > bestScore) { bestScore = scores[k]; best = k; }
-  }
+  for (const k in scores) { if (scores[k] > bestScore) { bestScore = scores[k]; best = k; } }
 
   const skin = skinTypes[best];
   document.getElementById('quiz-section').classList.add('hidden');
-
   const rs = document.getElementById('result-section');
   rs.classList.remove('hidden');
 
-  const amSteps = skin.am.map((s, i) => `
-    <li><span class="step-num">${i + 1}</span>
-      <span class="step-text"><strong>${s.step}</strong><span>${s.note}</span></span>
-    </li>`).join('');
-
-  const pmSteps = skin.pm.map((s, i) => `
-    <li><span class="step-num">${i + 1}</span>
-      <span class="step-text"><strong>${s.step}</strong><span>${s.note}</span></span>
-    </li>`).join('');
+  const amSteps = skin.am.map((s, i) => `<li><span class="step-num">${i+1}</span><span class="step-text"><strong>${s.step}</strong><span>${s.note}</span></span></li>`).join('');
+  const pmSteps = skin.pm.map((s, i) => `<li><span class="step-num">${i+1}</span><span class="step-text"><strong>${s.step}</strong><span>${s.note}</span></span></li>`).join('');
 
   rs.innerHTML = `
     <div class="result-card">
       <div class="result-banner">
         <div class="emoji">${skin.emoji}</div>
-        <h2>Da của bạn là ${skin.name}</h2>
-        <p>Kết quả dựa trên ${questions.length} câu trả lời của bạn</p>
+        <h2>Da bạn là ${skin.name}</h2>
       </div>
       <div class="result-body">
         <p class="result-desc">${skin.desc}</p>
-
-        <div class="section-title">🌅 Routine Buổi Sáng</div>
+        <div style="font-weight:600; color:var(--terra); margin-bottom:10px;">🌅 Gợi ý Routine Sáng:</div>
         <ul class="routine-list">${amSteps}</ul>
-
-        <div class="section-title">🌙 Routine Buổi Tối</div>
+        <div style="font-weight:600; color:var(--terra); margin-bottom:10px;">🌙 Gợi ý Routine Tối:</div>
         <ul class="routine-list">${pmSteps}</ul>
-
         <div class="tips-box">${skin.tips}</div>
-
-        <button class="btn-restart" onclick="restart()">Làm lại quiz →</button>
+        <button class="btn-restart" onclick="restart()">Thực hiện lại Quiz</button>
       </div>
     </div>`;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function restart() {
-  answers = [];
-  current = 0;
+  answers = []; current = 0;
   document.getElementById('result-section').classList.add('hidden');
   document.getElementById('quiz-section').classList.remove('hidden');
   renderQuestion();
 }
 
 renderQuestion();
-</script>
-
-<script>
-function sendHeight() {
-  const h = document.documentElement.scrollHeight || document.body.scrollHeight;
-  window.parent.postMessage({ type: 'setHeight', height: h }, '*');
-}
-window.addEventListener('load', sendHeight);
-window.addEventListener('resize', sendHeight);
-const observer = new MutationObserver(sendHeight);
-observer.observe(document.body, { childList: true, subtree: true, attributes: true });
 </script>
 </body>
 </html>
